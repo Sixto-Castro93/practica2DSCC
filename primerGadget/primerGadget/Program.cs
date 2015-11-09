@@ -11,6 +11,7 @@ using Microsoft.SPOT.Touch;
 using Gadgeteer.Networking;
 using GT = Gadgeteer;
 using GTM = Gadgeteer.Modules;
+using Gadgeteer.Modules.GHIElectronics;
 
 namespace primerGadget
 {
@@ -35,6 +36,28 @@ namespace primerGadget
 
             // Use Debug.Print to show messages in Visual Studio's "Output" window during debugging.
             Debug.Print("Program Started");
+            camera.CameraConnected += camera_CameraConnected;
+            camera.BitmapStreamed += camera_BitmapStreamed;
+           
+
         }
+
+        void camera_CameraConnected(Camera sender, EventArgs e)
+        {
+            Debug.Print("camara Started");
+            camera.StartStreaming();
+            
+        }
+      
+        private void camera_BitmapStreamed(Camera sender, Bitmap e)
+        {
+
+            displayT35.SimpleGraphics.DisplayImage(e, 0, 0);
+                
+         
+           // camera.StopStreaming();
+        }
+
+        
     }
 }
