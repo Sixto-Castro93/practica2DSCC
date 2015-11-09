@@ -15,8 +15,11 @@ using Gadgeteer.Modules.GHIElectronics;
 
 namespace primerGadget
 {
+
     public partial class Program
     {
+        int numero = 0;
+        GT.Timer timer = new GT.Timer(1500,GT.Timer.BehaviorType.RunOnce); // every second (1000ms)
         // This method is run when the mainboard is powered up or reset.   
         void ProgramStarted()
         {
@@ -36,11 +39,56 @@ namespace primerGadget
 
             // Use Debug.Print to show messages in Visual Studio's "Output" window during debugging.
             Debug.Print("Program Started");
+           
+             timer.Tick += timer_Tick;       
+          
             camera.CameraConnected += camera_CameraConnected;
             camera.BitmapStreamed += camera_BitmapStreamed;
-           
+            button.ButtonPressed += button_ButtonPressed;
+            camera.PictureCaptured += camera_PictureCaptured;
+            sdCard.Mounted += sdCard_Mounted;
+        
 
         }
+
+        void sdCard_Mounted(SDCard sender, GT.StorageDevice device)
+        {
+            Debug.Print("sd insertada");
+        }
+
+        void timer_Tick(GT.Timer timer)
+        {
+            Debug.Print("camara Started after 1500ms");
+            camera.StartStreaming();
+        }
+
+  
+
+        void camera_PictureCaptured(Camera sender, GT.Picture e)
+        {
+            Debug.Print("imagen capturada");
+            button.TurnLedOn();
+            sdCard.StorageDevice.WriteFile("picture.bmp", e.PictureData);
+               
+                 Debug.Print("imagen guardada");
+                button.TurnLedOff();
+                timer.Start();
+             
+
+
+        }
+
+        private void button_ButtonPressed(Button sender, Button.ButtonState state)
+        {
+            Debug.Print("boton presionado");
+            camera.StopStreaming();
+            camera.TakePicture();
+           
+
+           
+        }
+
+      
 
         void camera_CameraConnected(Camera sender, EventArgs e)
         {
